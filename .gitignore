@@ -1,0 +1,5 @@
+classification_data.csv
+regression_data.csv
+# Ignore Python bytecode files
+*.pyc
+__pycache__/
