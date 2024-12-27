@@ -66,10 +66,11 @@ def save_and_load_model(clf_best, model_filename='decision_tree_model.pkl'):
     clf_loaded = joblib.load(model_filename)
     return clf_loaded
 
-def main():
-    file_path = 'regression_data.csv'  # Replace with your dataset path
-    task_type = 'regression'  # Change to 'classification' for classification tasks
-
+def train_decision_tree(task_type='classification', file_path=None):
+    # Load and preprocess data based on the task type
+    if not file_path:
+        file_path = 'classification_data.csv' if task_type == 'classification' else 'regression_data.csv'
+    
     X_train, X_test, y_train, y_test, feature_names, target_column = load_and_preprocess_data(file_path)
     clf = initialize_model(task_type)
     clf_best = hyperparameter_tuning(clf, X_train, y_train, task_type)
@@ -83,6 +84,5 @@ def main():
     clf_loaded = save_and_load_model(clf_best)
     performance_loaded = evaluate_model(clf_loaded, X_test, y_test, task_type)
     print(f'Performance (loaded model): {performance_loaded:.2f}')
-
-if __name__ == '__main__':
-    main()
+    
+    return clf_best
