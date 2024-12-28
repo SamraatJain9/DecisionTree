@@ -54,11 +54,65 @@ def evaluate_model(clf_best, X_test, y_test, task_type='classification'):
         return np.sqrt(mse)
 
 def visualize_tree(clf_best, feature_names, task_type='classification'):
-    plt.figure(figsize=(20,10))
+    plt.figure(figsize=(20, 10))
+    
+    # Tree Plot Styling
     if task_type == 'classification':
-        tree.plot_tree(clf_best, filled=True, feature_names=feature_names, class_names=clf_best.classes_, rounded=True)
+        tree.plot_tree(clf_best, filled=True, feature_names=feature_names, class_names=clf_best.classes_, rounded=True, proportion=False, fontsize=12)
     else:
-        tree.plot_tree(clf_best, filled=True, feature_names=feature_names, rounded=True)
+        tree.plot_tree(clf_best, filled=True, feature_names=feature_names, rounded=True, proportion=False, fontsize=12)
+
+    # Customizing the plot to make it more user-friendly
+    plt.title("Decision Tree Visualization", fontsize=16)
+    
+    plt.show()
+
+def get_custom_tree_labels(clf_best, task_type='classification'):
+    # Extract decision tree structure
+    tree_structure = clf_best.tree_
+    
+    # Custom labels for nodes
+    custom_labels = {}
+    
+    # Iterate through all the nodes in the tree to apply custom terminology
+    for i in range(tree_structure.node_count):
+        # If it's a leaf node (Final Answer)
+        if tree_structure.children_left[i] == tree_structure.children_right[i]:
+            if task_type == 'classification':
+                custom_labels[i] = f"Final Answer: {clf_best.classes_[tree_structure.value[i].argmax()]}"
+            else:
+                custom_labels[i] = f"Final Answer: {tree_structure.value[i].mean():.2f}"
+        # If it's a decision node (Decision Points)
+        else:
+            if task_type == 'classification':
+                custom_labels[i] = f"Decision Point: {tree_structure.feature_names_in_[tree_structure.feature[i]]}?" 
+            else:
+                custom_labels[i] = f"Decision Point: {tree_structure.feature_names_in_[tree_structure.feature[i]]}?"
+
+    return custom_labels
+
+
+def visualize_tree_with_custom_labels(clf_best, feature_names, task_type='classification'):
+    # Create a figure for the visualization
+    fig, ax = plt.subplots(figsize=(20, 10))
+    
+    # Plot the tree
+    if task_type == 'classification':
+        tree.plot_tree(clf_best, filled=True, feature_names=feature_names, class_names=clf_best.classes_, rounded=True, fontsize=12, ax=ax)
+    else:
+        tree.plot_tree(clf_best, filled=True, feature_names=feature_names, rounded=True, fontsize=12, ax=ax)
+    
+    # Get custom labels
+    custom_labels = get_custom_tree_labels(clf_best, task_type)
+    
+    # Adding the custom labels on top of the plot
+    for node, label in custom_labels.items():
+        # Adjust xy coordinates if needed to fine-tune the position
+        ax.annotate(label, xy=(tree_structure.node_x[node], tree_structure.node_y[node]),
+                    xycoords='figure fraction', horizontalalignment='center', fontsize=10, color='black')
+    
+    # Set title and show the plot
+    ax.set_title("Decision Tree: Path to Final Answer", fontsize=16)
     plt.show()
 
 def save_and_load_model(clf_best, model_filename='decision_tree_model.pkl'):
