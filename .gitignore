@@ -3,3 +3,5 @@ regression_data.csv
 # Ignore Python bytecode files
 *.pyc
 __pycache__/
+commands.txt
+decision_tree_model.pkl
