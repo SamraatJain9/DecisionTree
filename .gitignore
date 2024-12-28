@@ -5,3 +5,6 @@ regression_data.csv
 __pycache__/
 commands.txt
 decision_tree_model.pkl
+regression_tree_model.pkl
+regression_tree.json
+tree0.json
